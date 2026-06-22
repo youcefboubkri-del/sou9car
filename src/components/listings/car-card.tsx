@@ -27,6 +27,12 @@ interface ListingCard {
   status?: string;
 }
 
+function proxyImg(url: string | null) {
+  if (!url) return null;
+  if (url.startsWith("/")) return url;
+  return `/api/img?url=${encodeURIComponent(url)}`;
+}
+
 export function CarCard({ listing, index = 0 }: { listing: ListingCard; index?: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const inView = useInView(cardRef, { once: true, margin: "-60px" });
@@ -77,10 +83,9 @@ export function CarCard({ listing, index = 0 }: { listing: ListingCard; index?: 
         <div className="h-52 bg-white/[0.06] relative overflow-hidden">
           {listing.thumbnail ? (
             <motion.img
-              src={listing.thumbnail}
+              src={proxyImg(listing.thumbnail)!}
               alt={listing.title}
               className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
               whileHover={{ scale: 1.08 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             />
