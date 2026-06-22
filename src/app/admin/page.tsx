@@ -178,7 +178,7 @@ function UserDetailModal({ userId, onClose, onUpdate }: { userId: string; onClos
                       </div>
                       <div className="text-right">
                         <p className="text-sm font-bold" style={{color:'#ffffff'}}>{formatPrice(l.price)}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[l.status]}`}>{{ACTIVE:"ACTIF",PENDING:"EN ATTENTE",SOLD:"VENDU",HIDDEN:"MASQUÉ",REJECTED:"REJETÉ"}[l.status] ?? l.status}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[l.status as keyof typeof STATUS_COLORS]}`}>{{ACTIVE:"ACTIF",PENDING:"EN ATTENTE",SOLD:"VENDU",HIDDEN:"MASQUÉ",REJECTED:"REJETÉ"}[l.status as keyof typeof STATUS_COLORS] ?? l.status}</span>
                       </div>
                     </Link>
                   ))}
@@ -416,7 +416,7 @@ export default function AdminPage() {
                       </div>
                       <div className="flex-shrink-0 text-right">
                         <p className="text-sm font-bold text-white">{formatPrice(l.price)}</p>
-                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[l.status]}`}>{{ACTIVE:"ACTIF",PENDING:"EN ATTENTE",SOLD:"VENDU",HIDDEN:"MASQUÉ",REJECTED:"REJETÉ"}[l.status] ?? l.status}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLORS[l.status as keyof typeof STATUS_COLORS]}`}>{{ACTIVE:"ACTIF",PENDING:"EN ATTENTE",SOLD:"VENDU",HIDDEN:"MASQUÉ",REJECTED:"REJETÉ"}[l.status as keyof typeof STATUS_COLORS] ?? l.status}</span>
                       </div>
                     </Link>
                   ))}
