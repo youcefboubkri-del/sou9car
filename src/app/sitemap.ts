@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { blogPosts } from "@/lib/blog-posts";
+import { prisma } from "@/lib/prisma";
 
 const BASE_URL = "https://sou9car.ma";
 
@@ -8,7 +9,7 @@ const CITIES = [
   "agadir", "meknes", "oujda", "kenitra", "tetouan",
 ];
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: BASE_URL, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
     { url: `${BASE_URL}/listings`, lastModified: new Date(), changeFrequency: "hourly", priority: 0.9 },
@@ -33,5 +34,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.75,
   }));
 
-  return [...staticPages, ...cityPages, ...blogPages];
+  let listingPages: MetadataRoute.Sitemap = [];
+  try {
+    const listings = await prisma.listing.findMany({
+      where: { status: "ACTIVE" },
+      select: { id: true, updatedAt: true },
+    });
+    listingPages = listings.map((l) => ({
+      url: `${BASE_URL}/listings/${l.id}`,
+      lastModified: new Date(l.updatedAt),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
+  } catch {}
+
+  return [...staticPages, ...cityPages, ...blogPages, ...listingPages];
 }
