@@ -1,0 +1,397 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum UserRole {
+  BUYER
+  SELLER
+  INSPECTOR
+  ADMIN
+}
+
+enum ListingStatus {
+  ACTIVE
+  PENDING
+  SOLD
+  HIDDEN
+  REJECTED
+}
+
+enum EscrowStatus {
+  PENDING
+  FUNDED
+  RELEASED
+  REFUNDED
+  DISPUTED
+}
+
+enum InspectionStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  phone          String?
+  passwordHash   String
+  name           String
+  role           UserRole  @default(BUYER)
+  emailVerified  Boolean   @default(false)
+  phoneVerified  Boolean   @default(false)
+  avatarUrl         String?
+  city              String?
+  subscriptionPlan  String?   @default("FREE")
+  subscriptionExpiry DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  listings          Listing[]
+  favorites         Favorite[]
+  dealership        Dealership?
+  sentMessages      Message[]           @relation("SentMessages")
+  receivedMessages  Message[]           @relation("ReceivedMessages")
+  buyerConversations  Conversation[] @relation("BuyerConversations")
+  sellerConversations Conversation[] @relation("SellerConversations")
+  inspections       Inspection[]        @relation("InspectorInspections")
+  bookedInspections Inspection[]        @relation("BuyerInspections")
+  reviewsGiven      Review[]            @relation("ReviewerReviews")
+  reviewsReceived   Review[]            @relation("ReviewedReviews")
+  sellerVerification SellerVerification?
+  escrowTransactions EscrowTransaction[]
+  buyerReservations  Reservation[]       @relation("BuyerReservations")
+  sellerReservations Reservation[]       @relation("SellerReservations")
+  priceAlerts        PriceAlert[]
+  wallet             Wallet?
+
+  @@map("users")
+}
+
+model Wallet {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  balance   Float    @default(0)
+  updatedAt DateTime @updatedAt
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions WalletTransaction[]
+
+  @@map("wallets")
+}
+
+model WalletTransaction {
+  id        String   @id @default(cuid())
+  walletId  String
+  amount    Float
+  type      String   // TOPUP_PAYPAL | TOPUP_BANK | TOPUP_CARD | DEBIT_ESCROW | DEBIT_BOOST | DEBIT_INSPECTION | DEBIT_RESERVATION | REFUND
+  status    String   @default("PENDING") // PENDING | CONFIRMED | REJECTED
+  reference String?
+  note      String?
+  proof     String?
+  createdAt DateTime @default(now())
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@map("wallet_transactions")
+}
+
+model SellerVerification {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  userIdNumber  String
+  userIdPhoto   String
+  proofOfAddress String?
+  status        String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  verifiedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("seller_verifications")
+}
+
+model Listing {
+  id              String        @id @default(cuid())
+  sellerId        String
+  title           String
+  description     String
+  brand           String
+  model           String
+  year            Int
+  mileage         Int
+  price           Float
+  currency        String        @default("MAD")
+  fuelType        String        // DIESEL, GASOLINE, ELECTRIC, HYBRID
+  transmission    String        // MANUAL, AUTOMATIC
+  bodyType        String        // SUV, SEDAN, HATCHBACK, COUPE, PICKUP, etc.
+  color           String?
+  colorManufacturer String?
+  interior        String?
+  engineSize      String?
+  engineDisplacement Int?
+  power           String?
+  performanceKw   Int?
+  performanceHp   Int?
+  driveType       String?
+  fuelConsumption String?
+  co2Emissions    Int?
+  doors           Int?
+  seats           Int?
+  cylinders       Int?
+  tankSize        Int?
+  condition       String?
+  series          String?
+  equipmentLine   String?
+  firstRegistration String?
+  numberOfOwners  Int?
+  huStatus        String?
+  airConditioning String?
+  parkingAssistance String?
+  airbags         String?
+  brakedTrailerLoad Int?
+  unbrakedTowingCapacity Int?
+  vehicleWeight   Int?
+  lastMaintenanceDate String?
+  lastServiceKm   Int?
+  city            String
+  isVintage       Boolean       @default(false)
+  isImport        Boolean       @default(false)
+  isDamaged       Boolean       @default(false)
+  hasWarranty     Boolean       @default(false)
+  creditEnabled       Boolean @default(false)
+  creditDownPayment   Int?
+  creditMonths        Int?
+  creditInterestRate  Float?  @default(0)
+  status          ListingStatus @default(ACTIVE)
+  isFeatured      Boolean       @default(false)
+  featuredUntil   DateTime?
+  views           Int           @default(0)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  seller        User         @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  images        ListingImage[]
+  favorites     Favorite[]
+  vehicleHistory VehicleHistory?
+  inspections   Inspection[]
+  escrowTransactions EscrowTransaction[]
+  boosts        ListingBoost[]
+  reservations  Reservation[]
+
+  @@map("listings")
+}
+
+model ListingBoost {
+  id          String   @id @default(cuid())
+  listingId   String
+  sellerId    String
+  plan        String   // "7days" | "30days"
+  price       Float
+  status      String   @default("PENDING") // PENDING | PAID | ACTIVE | EXPIRED
+  paidAt      DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("listing_boosts")
+}
+
+model Dealership {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  name        String
+  description String?
+  logo        String?
+  city        String
+  phone       String?
+  website     String?
+  plan        String   @default("BASIC") // BASIC | PRO
+  status      String   @default("PENDING") // PENDING | ACTIVE | SUSPENDED
+  paidUntil   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("dealerships")
+}
+
+model ListingImage {
+  id        String   @id @default(cuid())
+  listingId String
+  url       String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("listing_images")
+}
+
+model VehicleHistory {
+  id              String   @id @default(cuid())
+  listingId       String   @unique
+  vinNumber       String
+  registrationNumber String?
+  previousOwners  Int?
+  accidentHistory String?  // JSON string with accident records
+  serviceHistory  String?  // JSON string with service records
+  mileageVerified Boolean  @default(false)
+  importedFrom    String?
+  customsCleared  Boolean?
+  hasLien         Boolean  @default(false)
+  theftRecord     Boolean  @default(false)
+  reportUrl       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@map("vehicle_histories")
+}
+
+model Inspection {
+  id              String           @id @default(cuid())
+  listingId       String
+  inspectorId     String?
+  buyerId         String
+  status          InspectionStatus @default(PENDING)
+  scheduledAt     DateTime?
+  completedAt     DateTime?
+  location        String?
+  notes           String?
+  reportUrl       String?
+  price           Float            @default(0)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  listing  Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  inspector User?  @relation("InspectorInspections", fields: [inspectorId], references: [id])
+  buyer    User    @relation("BuyerInspections", fields: [buyerId], references: [id])
+
+  @@map("inspections")
+}
+
+model EscrowTransaction {
+  id           String        @id @default(cuid())
+  listingId    String
+  buyerId      String
+  amount       Float
+  fee          Float         @default(0)
+  status       EscrowStatus  @default(PENDING)
+  buyerPaidAt  DateTime?
+  releasedAt   DateTime?
+  refundedAt   DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyer   User   @relation(fields: [buyerId], references: [id])
+
+  @@map("escrow_transactions")
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  listingId String?
+  buyerId   String
+  sellerId  String
+  createdAt DateTime @default(now())
+
+  buyer    User      @relation("BuyerConversations", fields: [buyerId], references: [id])
+  seller   User      @relation("SellerConversations", fields: [sellerId], references: [id])
+  messages Message[]
+
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  receiverId     String
+  content        String
+  readAt         DateTime?
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation("SentMessages", fields: [senderId], references: [id])
+  receiver     User         @relation("ReceivedMessages", fields: [receiverId], references: [id])
+
+  @@map("messages")
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  reviewerId String
+  reviewedId String
+  listingId String?
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+
+  reviewer User @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  reviewed User @relation("ReviewedReviews", fields: [reviewedId], references: [id])
+
+  @@map("reviews")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  listingId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@map("favorites")
+}
+
+model Reservation {
+  id              String    @id @default(cuid())
+  listingId       String
+  buyerId         String
+  sellerId        String
+  status          String    @default("PENDING") // PENDING | CONFIRMED | REJECTED | EXPIRED | PAID
+  expiresAt       DateTime
+  paypalCaptureId String?
+  bankTransferProof String?
+  paidAt          DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  buyer   User    @relation("BuyerReservations", fields: [buyerId], references: [id])
+  seller  User    @relation("SellerReservations", fields: [sellerId], references: [id])
+
+  @@map("reservations")
+}
+
+model PriceAlert {
+  id          String   @id @default(cuid())
+  userId      String
+  email       String
+  brand       String?
+  model       String?
+  city        String?
+  maxPrice    Int
+  minYear     Int?
+  fuelType    String?
+  createdAt   DateTime @default(now())
+  active      Boolean  @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("price_alerts")
+}

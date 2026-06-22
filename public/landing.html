@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sou9Car — Marketplace Automobile Maroc</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Space+Grotesk:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--blue:#3b82f6;--blue-dim:rgba(59,130,246,0.15);--blue-glow:rgba(59,130,246,0.5)}
+html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
+body{background:#000;color:#fff;font-family:'Inter',sans-serif;overflow-x:hidden}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:20px 48px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,10,0.9),transparent);backdrop-filter:blur(0px)}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:900;color:#fff;text-decoration:none;letter-spacing:-0.5px}
+.nav-logo span{color:var(--blue)}
+.nav-links{display:flex;gap:36px;list-style:none;align-items:center}
+.nav-links a{color:rgba(255,255,255,0.55);text-decoration:none;font-size:14px;transition:color .2s}
+.nav-links a:hover{color:#fff}
+.nav-btn{background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);color:var(--blue)!important;padding:8px 22px;border-radius:100px;font-weight:500}
+.nav-btn:hover{background:rgba(59,130,246,0.22)!important}
+
+/* SECTIONS */
+section{position:relative;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;scroll-snap-align:start}
+canvas.bg{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+/* HERO */
+.hero-content{position:relative;z-index:10;text-align:center;padding:0 24px}
+.hero-eyebrow{font-size:11px;letter-spacing:5px;text-transform:uppercase;color:var(--blue);margin-bottom:20px;font-weight:600;opacity:0;animation:fadeUp .8s .4s forwards}
+.hero-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(64px,11vw,140px);font-weight:900;line-height:.95;letter-spacing:-4px;opacity:0;animation:fadeUp .8s .6s forwards}
+.hero-title span{color:var(--blue);text-shadow:0 0 60px rgba(59,130,246,0.6)}
+.hero-sub{font-size:clamp(14px,1.8vw,18px);color:rgba(255,255,255,0.45);margin:24px 0 44px;letter-spacing:1px;opacity:0;animation:fadeUp .8s .8s forwards}
+.hero-btns{display:flex;gap:14px;justify-content:center;opacity:0;animation:fadeUp .8s 1s forwards}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:15px 36px;border-radius:100px;font-size:15px;font-weight:600;text-decoration:none;transition:all .3s;cursor:pointer;border:none}
+.btn-blue{background:var(--blue);color:#fff;box-shadow:0 0 50px rgba(59,130,246,0.4)}
+.btn-blue:hover{background:#60a5fa;box-shadow:0 0 70px rgba(59,130,246,0.6);transform:translateY(-2px)}
+.btn-outline{border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.65);background:rgba(255,255,255,0.03)}
+.btn-outline:hover{border-color:rgba(255,255,255,0.4);color:#fff}
+.scroll-arrow{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:10;opacity:0;animation:fadeUp .6s 1.4s forwards}
+.scroll-arrow svg{width:22px;opacity:.35;animation:arrowBounce 2s infinite 1.5s}
+
+/* INTERIOR SECTION */
+#interior{background:#000}
+.windshield{position:absolute;inset:0;pointer-events:none;z-index:5}
+.interior-content{position:relative;z-index:10;text-align:center;width:60%;max-width:680px}
+.section-pill{display:inline-block;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--blue);background:var(--blue-dim);border:1px solid rgba(59,130,246,0.2);padding:5px 16px;border-radius:100px;margin-bottom:24px;font-weight:600}
+.section-h{font-family:'Space Grotesk',sans-serif;font-size:clamp(28px,4.5vw,52px);font-weight:700;line-height:1.05;margin-bottom:16px}
+.section-p{color:rgba(255,255,255,0.4);font-size:15px;line-height:1.7;margin-bottom:48px}
+.stats-row{display:flex;gap:0;justify-content:center}
+.stat{padding:0 40px;border-right:1px solid rgba(255,255,255,0.08)}
+.stat:last-child{border-right:none}
+.stat-n{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,5vw,60px);font-weight:700;color:var(--blue);line-height:1}
+.stat-l{font-size:11px;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:2px;margin-top:6px}
+
+/* DASHBOARD SECTION */
+#dashboard{background:#020208}
+.dash-wrap{position:relative;z-index:10;width:88%;max-width:860px;text-align:center}
+#dash-svg{width:100%;max-width:760px;margin:32px auto 0;display:block}
+
+/* FEATURES SECTION */
+#features{background:#000}
+.features-wrap{position:relative;z-index:10;width:92%;max-width:1000px;text-align:center}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+.feat-card{background:rgba(255,255,255,0.028);border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:28px 22px;text-align:left;transition:border-color .3s,background .3s}
+.feat-card:hover{border-color:rgba(59,130,246,0.25);background:rgba(59,130,246,0.04)}
+.feat-icon{width:48px;height:48px;border-radius:14px;background:rgba(59,130,246,0.12);display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.feat-t{font-size:15px;font-weight:600;margin-bottom:8px}
+.feat-d{font-size:13px;color:rgba(255,255,255,0.38);line-height:1.6}
+
+/* CTA */
+#cta{background:#000}
+.cta-content{position:relative;z-index:10;text-align:center;max-width:700px;padding:0 24px}
+.cta-h{font-family:'Space Grotesk',sans-serif;font-size:clamp(36px,5.5vw,68px);font-weight:900;line-height:1.05;margin:16px 0 20px}
+.cta-h em{font-style:normal;color:var(--blue);text-shadow:0 0 50px rgba(59,130,246,0.5)}
+.cta-p{color:rgba(255,255,255,0.4);font-size:17px;margin-bottom:40px}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes arrowBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:translateY(0)}
+
+/* FOOTER BAR */
+.footer-bar{position:fixed;bottom:0;left:0;right:0;z-index:150;padding:10px 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(0,0,0,0.7);border-top:1px solid rgba(255,255,255,0.05);font-size:12px;color:rgba(255,255,255,0.3)}
+.footer-bar a{color:rgba(59,130,246,0.7);text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Sou9<span>Car</span></a>
+  <ul class="nav-links">
+    <li><a href="#interior">Annonces</a></li>
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#dashboard">Stats</a></li>
+    <li><a href="/listings" class="nav-btn">Voir les voitures →</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 1 · HERO — Night Highway       -->
+<!-- ═══════════════════════════════════════ -->
+<section id="hero">
+  <canvas class="bg" id="c-highway"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Marketplace Automobile · Maroc 🇲🇦</div>
+    <h1 class="hero-title">Sou9<span>Car</span></h1>
+    <p class="hero-sub">Achetez et vendez votre voiture en toute confiance.</p>
+    <div class="hero-btns">
+      <a href="/listings" class="btn btn-blue">Parcourir les annonces ↗</a>
+      <a href="/auth/register" class="btn btn-outline">Vendre ma voiture</a>
+    </div>
+  </div>
+  <div class="scroll-arrow">
+    <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+      <path d="M12 5v14M5 12l7 7 7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 2 · INTERIOR — Inside car view -->
+<!-- ═══════════════════════════════════════ -->
+<section id="interior">
+  <canvas class="bg" id="c-interior"></canvas>
+
+  <!-- Car windshield SVG overlay -->
+  <svg class="windshield" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <!-- Roof bar -->
+    <rect x="0" y="0" width="1440" height="55" fill="rgba(0,0,2,0.99)"/>
+    <!-- Left A-pillar -->
+    <path d="M0,0 L0,900 L148,900 L235,55 L0,55 Z" fill="rgba(2,2,8,0.98)"/>
+    <!-- Right A-pillar -->
+    <path d="M1440,0 L1440,900 L1292,900 L1205,55 L1440,55 Z" fill="rgba(2,2,8,0.98)"/>
+    <!-- Dashboard bottom -->
+    <path d="M0,900 L148,900 L210,800 Q720,745 1230,800 L1292,900 L1440,900 Z" fill="rgba(2,2,8,0.99)"/>
+    <!-- Dashboard accent line -->
+    <path d="M210,800 Q720,745 1230,800" stroke="rgba(59,130,246,0.25)" stroke-width="1.5" fill="none"/>
+    <!-- Dashboard glow -->
+    <path d="M210,800 Q720,745 1230,800" stroke="rgba(59,130,246,0.08)" stroke-width="8" fill="none"/>
+    <!-- Rearview mirror -->
+    <rect x="638" y="55" width="164" height="76" rx="6" fill="rgba(8,8,18,0.97)" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <text x="720" y="97" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(255,255,255,0.25)" letter-spacing="2">REARVIEW</text>
+    <!-- Pillar screws (detail) -->
+    <circle cx="160" cy="880" r="5" fill="rgba(255,255,255,0.06)"/>
+    <circle cx="1280" cy="880" r="5" fill="rgba(255,255,255,0.06)"/>
+  </svg>
+
+  <div class="interior-content reveal">
+    <div class="section-pill">📍 Vue de l'intérieur</div>
+    <h2 class="section-h">Le Maroc roule<br>avec Sou9Car</h2>
+    <p class="section-p">Des milliers d'annonces vérifiées dans toutes les villes du Maroc. Achetez avec confiance.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-n" data-target="1200" data-suffix="K">0</div>
+        <div class="stat-l">Annonces</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" data-target="10" data-suffix="">0</div>
+        <div class="stat-l">Villes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-n" data-target="99" data-suffix="%">0</div>
+        <div class="stat-l">Vendeurs vérifiés</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 3 · DASHBOARD                  -->
+<!-- ═══════════════════════════════════════ -->
+<section id="dashboard">
+  <canvas class="bg" id="c-dash"></canvas>
+  <div class="dash-wrap reveal">
+    <div class="section-pill">🎛️ Tableau de bord</div>
+    <h2 class="section-h">Tout sous contrôle</h2>
+
+    <svg id="dash-svg" viewBox="0 0 800 280">
+      <!-- LEFT GAUGE — Annonces -->
+      <g id="g-left" transform="translate(148,140)">
+        <circle r="112" fill="rgba(0,0,15,0.7)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <circle r="92" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="22"/>
+        <!-- Arc fill -->
+        <circle r="92" fill="none" stroke="#3b82f6" stroke-width="22"
+          stroke-dasharray="578" stroke-dashoffset="578" stroke-linecap="round"
+          transform="rotate(-220)" id="arc-left"/>
+        <text y="-12" text-anchor="middle" font-family="Space Grotesk" font-size="34" fill="white" font-weight="700" id="val-left">0</text>
+        <text y="14" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(255,255,255,0.3)" letter-spacing="2">ANNONCES</text>
+        <line x1="0" y1="-8" x2="0" y2="-78" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" id="needle-left" transform="rotate(-140)" style="transform-origin:0 0"/>
+        <circle r="7" fill="#3b82f6"/>
+        <circle r="3" fill="#000"/>
+      </g>
+
+      <!-- CENTER DISPLAY -->
+      <g transform="translate(400,140)">
+        <rect x="-115" y="-102" width="230" height="204" rx="14" fill="rgba(5,8,22,0.95)" stroke="rgba(59,130,246,0.18)" stroke-width="1"/>
+        <!-- Top label -->
+        <text y="-68" text-anchor="middle" font-family="Inter" font-size="9" fill="#3b82f6" letter-spacing="4" font-weight="600">SOU9CAR</text>
+        <line x1="-80" y1="-54" x2="80" y2="-54" stroke="rgba(59,130,246,0.15)" stroke-width="1"/>
+        <!-- Car icon (simplified) -->
+        <path d="M-30,-38 L-40,-22 L-44,-22 L-44,-10 L44,-10 L44,-22 L40,-22 L30,-38 Z" fill="rgba(59,130,246,0.2)" stroke="rgba(59,130,246,0.5)" stroke-width="1"/>
+        <rect x="-28" y="-36" width="56" height="18" rx="3" fill="rgba(59,130,246,0.08)"/>
+        <circle cx="-28" cy="-8" r="7" fill="rgba(59,130,246,0.3)" stroke="#3b82f6" stroke-width="1"/>
+        <circle cx="28" cy="-8" r="7" fill="rgba(59,130,246,0.3)" stroke="#3b82f6" stroke-width="1"/>
+        <line x1="-80" y1="16" x2="80" y2="16" stroke="rgba(59,130,246,0.1)" stroke-width="1"/>
+        <!-- Status -->
+        <circle cx="-50" cy="32" r="4" fill="#22c55e"/>
+        <text x="-38" y="36" font-family="Inter" font-size="10" fill="rgba(255,255,255,0.45)">En ligne</text>
+        <text y="62" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(255,255,255,0.2)">🇲🇦 Maroc · 2026</text>
+        <text y="84" text-anchor="middle" font-family="Space Grotesk" font-size="13" fill="rgba(59,130,246,0.7)" font-weight="600">marketplace auto</text>
+      </g>
+
+      <!-- RIGHT GAUGE — Villes -->
+      <g id="g-right" transform="translate(652,140)">
+        <circle r="112" fill="rgba(0,0,15,0.7)" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <circle r="92" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="22"/>
+        <circle r="92" fill="none" stroke="#8b5cf6" stroke-width="22"
+          stroke-dasharray="578" stroke-dashoffset="578" stroke-linecap="round"
+          transform="rotate(-220)" id="arc-right"/>
+        <text y="-12" text-anchor="middle" font-family="Space Grotesk" font-size="34" fill="white" font-weight="700" id="val-right">0</text>
+        <text y="14" text-anchor="middle" font-family="Inter" font-size="10" fill="rgba(255,255,255,0.3)" letter-spacing="2">VILLES</text>
+        <line x1="0" y1="-8" x2="0" y2="-78" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round" id="needle-right" transform="rotate(-140)" style="transform-origin:0 0"/>
+        <circle r="7" fill="#8b5cf6"/>
+        <circle r="3" fill="#000"/>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 4 · FEATURES                   -->
+<!-- ═══════════════════════════════════════ -->
+<section id="features">
+  <canvas class="bg" id="c-feat"></canvas>
+  <div class="features-wrap">
+    <div class="section-pill reveal">⚡ Fonctionnalités</div>
+    <h2 class="section-h reveal" style="margin-top:12px">Conçu pour le Maroc</h2>
+    <div class="feat-grid">
+      <div class="feat-card reveal">
+        <div class="feat-icon">📊</div>
+        <div class="feat-t">Estimateur de Prix</div>
+        <div class="feat-d">Prix du marché marocain 2026 par modèle exact, avec dépréciation réelle.</div>
+      </div>
+      <div class="feat-card reveal" style="border-color:rgba(59,130,246,0.2);background:rgba(59,130,246,0.04)">
+        <div class="feat-icon">🔔</div>
+        <div class="feat-t">Alertes Prix</div>
+        <div class="feat-d">Recevez une alerte email dès qu'une voiture correspond à vos critères.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">💳</div>
+        <div class="feat-t">Option Crédit</div>
+        <div class="feat-d">Achetez en plusieurs fois. Calcul PMT en temps réel depuis l'annonce.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">✅</div>
+        <div class="feat-t">Vendeurs Vérifiés</div>
+        <div class="feat-d">Vérification d'identité obligatoire avant toute publication.</div>
+      </div>
+      <div class="feat-card reveal" style="border-color:rgba(34,197,94,0.18);background:rgba(34,197,94,0.03)">
+        <div class="feat-icon">💬</div>
+        <div class="feat-t">WhatsApp Direct</div>
+        <div class="feat-d">Contact direct avec le détail de la voiture pré-rempli dans le message.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">🔒</div>
+        <div class="feat-t">Paiement Sécurisé</div>
+        <div class="feat-d">Escrow intégré — argent bloqué jusqu'à validation de la voiture.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ -->
+<!-- SECTION 5 · CTA                        -->
+<!-- ═══════════════════════════════════════ -->
+<section id="cta">
+  <canvas class="bg" id="c-cta"></canvas>
+  <div class="cta-content reveal">
+    <div class="section-pill">🚀 Démarrez maintenant</div>
+    <h2 class="cta-h">Trouvez votre<br><em>voiture idéale</em><br>au Maroc</h2>
+    <p class="cta-p">Plus de 1 200 annonces vérifiées vous attendent.</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
+      <a href="/listings" class="btn btn-blue">Voir les annonces ↗</a>
+      <a href="/auth/register" class="btn btn-outline">Créer un compte gratuit</a>
+    </div>
+  </div>
+</section>
+
+<div class="footer-bar">
+  <span>© 2026 Sou9Car · La marketplace auto du Maroc</span>
+  <a href="/listings">Parcourir les annonces →</a>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+// ─────────────────────────────────────────────
+// HIGHWAY CANVAS ENGINE
+// ─────────────────────────────────────────────
+class Highway {
+  constructor(id, cfg={}) {
+    this.cv = document.getElementById(id);
+    if(!this.cv) return;
+    this.cx = this.cv.getContext('2d');
+    this.off = 0;
+    this.spd = cfg.speed||4;
+    this.stars=[];
+    this.ptcl=[];
+    this.resize();
+    this._initStars();
+    this._initPtcl();
+    window.addEventListener('resize',()=>this.resize());
+    this._loop();
+  }
+  resize(){
+    const p=this.cv.parentElement;
+    this.cv.width=p.offsetWidth;
+    this.cv.height=p.offsetHeight;
+    this.W=this.cv.width; this.H=this.cv.height;
+    this.vx=this.W/2; this.vy=this.H*.37;
+  }
+  _initStars(){
+    this.stars=Array.from({length:160},()=>({
+      x:Math.random()*this.W, y:Math.random()*this.vy,
+      r:Math.random()*1.4+.2, a:Math.random()*.9
+    }));
+  }
+  _initPtcl(){
+    this.ptcl=Array.from({length:70},()=>({
+      x:this.vx+(Math.random()-.5)*80,
+      y:this.vy+Math.random()*60,
+      vx:(Math.random()-.5)*.4,
+      vy:Math.random()*6+2,
+      s:Math.random()*1.4+.3,
+      a:Math.random()*.5+.1,
+      c:Math.random()>.4
+    }));
+  }
+  draw(){
+    const {cx,W,H,vx,vy}=this;
+    this.off=(this.off+this.spd)%80;
+
+    // BG
+    cx.fillStyle='#000610'; cx.fillRect(0,0,W,H);
+
+    // Sky
+    const sk=cx.createLinearGradient(0,0,0,vy);
+    sk.addColorStop(0,'#000610'); sk.addColorStop(.6,'#00112b'); sk.addColorStop(1,'#00184a');
+    cx.fillStyle=sk; cx.fillRect(0,0,W,vy);
+
+    // Stars
+    this.stars.forEach(s=>{
+      cx.beginPath(); cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,255,255,${s.a})`; cx.fill();
+    });
+
+    // Horizon glow
+    const hg=cx.createRadialGradient(vx,vy,0,vx,vy,320);
+    hg.addColorStop(0,'rgba(59,130,246,.28)'); hg.addColorStop(1,'transparent');
+    cx.fillStyle=hg; cx.fillRect(0,0,W,H);
+
+    // Road
+    const rd=cx.createLinearGradient(0,vy,0,H);
+    rd.addColorStop(0,'#04060f'); rd.addColorStop(.4,'#080b18'); rd.addColorStop(1,'#0e1120');
+    cx.beginPath();
+    cx.moveTo(0,H); cx.lineTo(vx-8,vy); cx.lineTo(vx+8,vy); cx.lineTo(W,H);
+    cx.closePath(); cx.fillStyle=rd; cx.fill();
+
+    // Road edges
+    cx.shadowBlur=8; cx.shadowColor='rgba(255,255,255,.25)';
+    cx.strokeStyle='rgba(255,255,255,.55)'; cx.lineWidth=2;
+    cx.beginPath(); cx.moveTo(0,H); cx.lineTo(vx-8,vy); cx.stroke();
+    cx.beginPath(); cx.moveTo(W,H); cx.lineTo(vx+8,vy); cx.stroke();
+    cx.shadowBlur=0;
+
+    // Guard rails (faint)
+    cx.strokeStyle='rgba(80,100,180,.14)'; cx.lineWidth=1;
+    cx.beginPath(); cx.moveTo(W*.04,H); cx.lineTo(vx-28,vy); cx.stroke();
+    cx.beginPath(); cx.moveTo(W*.96,H); cx.lineTo(vx+28,vy); cx.stroke();
+
+    // Street lamp posts
+    this._streetLamps();
+
+    // Lane dashes
+    this._dashes();
+
+    // Headlight beams
+    this._beams();
+
+    // Tail lights
+    this._taillights();
+
+    // Particles
+    this._particles();
+
+    // Road center glow
+    const rg=cx.createLinearGradient(vx-15,vy,vx+15,vy);
+    rg.addColorStop(0,'transparent'); rg.addColorStop(.5,'rgba(59,130,246,.12)'); rg.addColorStop(1,'transparent');
+    cx.fillStyle=rg; cx.fillRect(vx-15,vy,30,H-vy);
+  }
+  _streetLamps(){
+    const {cx,W,H,vx,vy}=this;
+    const sides=[-.18,-.08,.08,.18,.32,.5,.68,.86].map(t=>({
+      lx: vx-vx*t*2, rx: vx+vx*t*2, y: vy+(H-vy)*Math.abs(t)
+    }));
+    sides.forEach(s=>{
+      const a=Math.abs(s.y-vy)/(H-vy);
+      if(a<.05||a>.98) return;
+      // Left pole
+      cx.strokeStyle=`rgba(180,190,220,${a*.3})`; cx.lineWidth=a*3;
+      cx.beginPath(); cx.moveTo(s.lx,s.y); cx.lineTo(s.lx-a*20,s.y-a*60); cx.stroke();
+      // Left lamp
+      cx.shadowBlur=a*20; cx.shadowColor='rgba(255,220,100,.6)';
+      cx.beginPath(); cx.arc(s.lx-a*20,s.y-a*62,a*4,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,220,100,${a*.8})`; cx.fill();
+      cx.shadowBlur=0;
+      // Right pole
+      cx.strokeStyle=`rgba(180,190,220,${a*.3})`; cx.lineWidth=a*3;
+      cx.beginPath(); cx.moveTo(s.rx,s.y); cx.lineTo(s.rx+a*20,s.y-a*60); cx.stroke();
+      cx.shadowBlur=a*20; cx.shadowColor='rgba(255,220,100,.6)';
+      cx.beginPath(); cx.arc(s.rx+a*20,s.y-a*62,a*4,0,Math.PI*2);
+      cx.fillStyle=`rgba(255,220,100,${a*.8})`; cx.fill();
+      cx.shadowBlur=0;
+    });
+  }
+  _dashes(){
+    const {cx,W,H,vx,vy}=this;
+    for(let i=0;i<14;i++){
+      const t=((i/14)+this.off/80)%1;
+      const y=vy+(H-vy)*t;
+      const sc=t; const w=sc*7; const h=sc*28;
+      const al=Math.min(t*2,.92);
+      cx.fillStyle=`rgba(255,255,255,${al})`;
+      cx.fillRect(vx-w/2,y,w,h);
+      // Side dashes
+      const lx=vx-(vx*.38)*sc; const rx=vx+(vx*.38)*sc;
+      cx.fillStyle=`rgba(255,255,255,${al*.4})`;
+      cx.fillRect(lx-w*.4,y,w*.8,h*.8);
+      cx.fillRect(rx-w*.4,y,w*.8,h*.8);
+    }
+  }
+  _beams(){
+    const {cx,W,H,vx,vy}=this;
+    const lb=cx.createLinearGradient(vx,vy,W*.22,H);
+    lb.addColorStop(0,'rgba(210,230,255,0)'); lb.addColorStop(.5,'rgba(210,230,255,.07)'); lb.addColorStop(1,'rgba(210,230,255,0)');
+    cx.beginPath(); cx.moveTo(vx,vy); cx.lineTo(W*.1,H); cx.lineTo(W*.36,H); cx.closePath(); cx.fillStyle=lb; cx.fill();
+    const rb=cx.createLinearGradient(vx,vy,W*.78,H);
+    rb.addColorStop(0,'rgba(210,230,255,0)'); rb.addColorStop(.5,'rgba(210,230,255,.07)'); rb.addColorStop(1,'rgba(210,230,255,0)');
+    cx.beginPath(); cx.moveTo(vx,vy); cx.lineTo(W*.64,H); cx.lineTo(W*.90,H); cx.closePath(); cx.fillStyle=rb; cx.fill();
+  }
+  _taillights(){
+    const {cx,vx,vy}=this;
+    [[-.05,3],[.05,3],[-.13,2.2],[.13,2.2],[-.22,1.5],[.22,1.5]].forEach(([ox,s])=>{
+      const x=vx+ox*this.W; const y=vy+18+(Math.abs(ox)/.25)*(this.H-vy)*.08;
+      cx.shadowBlur=10; cx.shadowColor='rgba(255,40,40,.9)';
+      cx.beginPath(); cx.arc(x,y,s,0,Math.PI*2);
+      cx.fillStyle='rgba(255,70,70,.95)'; cx.fill();
+      cx.shadowBlur=0;
+    });
+  }
+  _particles(){
+    const {cx}=this;
+    this.ptcl.forEach(p=>{
+      p.x+=p.vx+(p.x-this.vx)*.018; p.y+=p.vy;
+      if(p.y>this.H||p.x<0||p.x>this.W){
+        p.x=this.vx+(Math.random()-.5)*70; p.y=this.vy+10;
+        p.vx=(Math.random()-.5)*.3; p.vy=Math.random()*5+2;
+      }
+      cx.beginPath(); cx.arc(p.x,p.y,p.s,0,Math.PI*2);
+      cx.fillStyle=p.c?`rgba(59,130,246,${p.a})`:`rgba(255,255,255,${p.a*.5})`;
+      cx.fill();
+    });
+  }
+  _loop(){this.draw(); requestAnimationFrame(()=>this._loop());}
+}
+
+// ─────────────────────────────────────────────
+// TECH GRID CANVAS (dashboard + features bg)
+// ─────────────────────────────────────────────
+class TechGrid {
+  constructor(id){
+    this.cv=document.getElementById(id);
+    if(!this.cv) return;
+    this.cx=this.cv.getContext('2d');
+    this.t=0;
+    this.resize();
+    window.addEventListener('resize',()=>this.resize());
+    this._loop();
+  }
+  resize(){
+    const p=this.cv.parentElement;
+    this.cv.width=p.offsetWidth; this.cv.height=p.offsetHeight;
+    this.W=this.cv.width; this.H=this.cv.height;
+  }
+  draw(){
+    const {cx,W,H}=this; this.t+=.008;
+    cx.fillStyle='#020208'; cx.fillRect(0,0,W,H);
+    // Grid
+    cx.strokeStyle='rgba(59,130,246,.035)'; cx.lineWidth=1;
+    for(let x=0;x<W;x+=55){cx.beginPath();cx.moveTo(x,0);cx.lineTo(x,H);cx.stroke();}
+    for(let y=0;y<H;y+=55){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke();}
+    // Pulse rings
+    for(let i=0;i<4;i++){
+      const r=(this.t*80+i*140)%500;
+      const a=(1-r/500)*.08;
+      cx.beginPath(); cx.arc(W/2,H/2,r,0,Math.PI*2);
+      cx.strokeStyle=`rgba(59,130,246,${a})`; cx.lineWidth=1; cx.stroke();
+    }
+    // Floating dots
+    for(let i=0;i<8;i++){
+      const x=W*.1+W*.8*((i/8+this.t*.03)%1);
+      const y=H*.3+Math.sin(this.t+i)*H*.2;
+      cx.beginPath(); cx.arc(x,y,1.5,0,Math.PI*2);
+      cx.fillStyle='rgba(59,130,246,.25)'; cx.fill();
+    }
+  }
+  _loop(){this.draw(); requestAnimationFrame(()=>this._loop());}
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+window.addEventListener('load',()=>{
+  new Highway('c-highway',{speed:4.5});
+  new Highway('c-interior',{speed:7});
+  new Highway('c-cta',{speed:5});
+  new TechGrid('c-dash');
+  new TechGrid('c-feat');
+
+  // ── Reveal on scroll ──
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        // Stagger children if multiple
+        const cards=e.target.querySelectorAll('.feat-card,.stat');
+        if(cards.length){
+          cards.forEach((c,i)=>{
+            setTimeout(()=>c.classList.add('in'),i*90);
+          });
+        }
+        e.target.classList.add('in');
+      }
+    });
+  },{threshold:.18});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+  // ── Counter animation ──
+  const counterObs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(!e.isIntersecting) return;
+      const el=e.target;
+      const target=parseInt(el.dataset.target);
+      const suffix=el.dataset.suffix||'';
+      let start=0; const dur=1800; const t0=performance.now();
+      const tick=now=>{
+        const p=Math.min((now-t0)/dur,1);
+        const eased=1-Math.pow(1-p,3);
+        const val=Math.round(target*eased);
+        el.textContent=(val>=1000?(val/1000).toFixed(1)+'K':val)+suffix;
+        if(p<1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+      counterObs.unobserve(el);
+    });
+  },{threshold:.3});
+  document.querySelectorAll('[data-target]').forEach(el=>counterObs.observe(el));
+
+  // ── Dashboard gauge animation ──
+  const dashObs=new IntersectionObserver(entries=>{
+    if(!entries[0].isIntersecting) return;
+
+    // Left arc (1200 annonces — fill to ~65%)
+    const al=document.getElementById('arc-left');
+    const vl=document.getElementById('val-left');
+    const nl=document.getElementById('needle-left');
+    if(al){
+      gsap.to(al,{strokeDashoffset:200,duration:1.6,ease:'power2.out',delay:.1});
+      gsap.fromTo(nl,{rotate:-140},{rotate:60,duration:1.6,ease:'power2.out',delay:.1});
+      let n=0; const tl=setInterval(()=>{n=Math.min(n+16,1200);vl.textContent=n>=1000?(n/1000).toFixed(1)+'K':n;if(n>=1200)clearInterval(tl);},16);
+    }
+    // Right arc (10 villes — fill to ~45%)
+    const ar=document.getElementById('arc-right');
+    const vr=document.getElementById('val-right');
+    const nr=document.getElementById('needle-right');
+    if(ar){
+      gsap.to(ar,{strokeDashoffset:315,duration:1.4,ease:'power2.out',delay:.25});
+      gsap.fromTo(nr,{rotate:-140},{rotate:18,duration:1.4,ease:'power2.out',delay:.25});
+      let n=0; const ti=setInterval(()=>{n=Math.min(n+1,10);vr.textContent=n;if(n>=10)clearInterval(ti);},100);
+    }
+    dashObs.unobserve(entries[0].target);
+  },{threshold:.3});
+  const dashSec=document.getElementById('dashboard');
+  if(dashSec) dashObs.observe(dashSec);
+});
+</script>
+</body>
+</html>
