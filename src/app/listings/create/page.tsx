@@ -8,9 +8,32 @@ import { CAR_BRANDS, FUEL_TYPES, TRANSMISSIONS, BODY_TYPES, MOROCCAN_CITIES } fr
 import { MainLayout } from "@/components/layout/main-layout";
 
 const STEPS = [
-  { num: 1, label: "Détails", icon: Car },
-  { num: 2, label: "Photos & Historique", icon: Camera },
-  { num: 3, label: "Récapitulatif", icon: FileText },
+  { num: 1, label: "Infos générales", icon: Car },
+  { num: 2, label: "Specs & Options", icon: FileText },
+  { num: 3, label: "Photos & Historique", icon: Camera },
+  { num: 4, label: "Récapitulatif", icon: CheckCircle },
+];
+
+const CONDITIONS = [
+  { label: "Excellent", value: "EXCELLENT", desc: "Comme neuf, aucun défaut" },
+  { label: "Bon état", value: "GOOD", desc: "Quelques traces d'usage mineures" },
+  { label: "État correct", value: "FAIR", desc: "Usure normale, peut nécessiter entretien" },
+  { label: "Mauvais état", value: "POOR", desc: "Défauts importants, réparations nécessaires" },
+];
+
+const DRIVE_TYPES = [
+  { label: "Traction avant (FWD)", value: "FWD" },
+  { label: "Propulsion arrière (RWD)", value: "RWD" },
+  { label: "4×4 intégral (AWD)", value: "AWD" },
+  { label: "4×4 sélectionnable (4WD)", value: "4WD" },
+];
+
+const AIR_CONDITIONING = [
+  { label: "Sans climatisation", value: "NONE" },
+  { label: "Climatisation manuelle", value: "MANUAL" },
+  { label: "Climatisation automatique", value: "AUTO" },
+  { label: "Double zone", value: "DUAL_ZONE" },
+  { label: "Multi-zones", value: "MULTI_ZONE" },
 ];
 
 export default function CreateListingPage() {
@@ -22,14 +45,23 @@ export default function CreateListingPage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
 
   const [form, setForm] = useState({
+    // Infos de base
     title: "", brand: "", model: "", year: "", mileage: "",
-    price: "", fuelType: "DIESEL", transmission: "MANUAL",
-    bodyType: "SUV", color: "", engineSize: "", power: "",
-    doors: "", seats: "", city: "Casablanca",
-    description: "", isVintage: false, isImport: false,
-    isDamaged: false, hasWarranty: false,
-    vinNumber: "", registrationNumber: "",
-    previousOwners: "", importedFrom: "", customsCleared: false,
+    price: "", city: "Casablanca", description: "",
+    // Caractéristiques
+    fuelType: "DIESEL", transmission: "MANUAL", bodyType: "SUV",
+    condition: "GOOD", driveType: "", color: "", interior: "",
+    // Moteur & performances
+    engineSize: "", cylinders: "", power: "", fuelConsumption: "", co2Emissions: "",
+    // Carrosserie
+    doors: "", seats: "",
+    // Flags
+    isVintage: false, isImport: false, isDamaged: false, hasWarranty: false,
+    // Historique
+    firstRegistration: "", numberOfOwners: "", airConditioning: "",
+    // Infos vente
+    vinNumber: "", registrationNumber: "", importedFrom: "", customsCleared: false,
+    // Crédit
     creditEnabled: false, creditDownPayment: "", creditMonths: "36", creditInterestRate: "0",
   });
 
@@ -39,7 +71,6 @@ export default function CreateListingPage() {
       .catch(() => router.push("/login"));
   }, [router]);
 
-  // Auto-generate title from brand + model + year
   useEffect(() => {
     if (form.brand && form.model && form.year) {
       setForm((p) => ({ ...p, title: `${form.brand} ${form.model} ${form.year}` }));
@@ -98,10 +129,11 @@ export default function CreateListingPage() {
 
   const inputClass = "w-full px-3 py-2.5 border border-white/10 rounded-xl text-sm bg-white/[0.04] focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-orange-400/30 focus:border-orange-400 transition-all";
   const labelClass = "block text-sm font-medium text-white/75 mb-1.5";
+  const sectionClass = "bg-surface rounded-2xl border border-white/[0.08] shadow-sm p-6 space-y-4";
+  const sectionTitle = "font-bold text-white mb-1 text-base";
 
   return (
     <MainLayout>
-      {/* Dark header bar */}
       <div className="bg-[#0a0a0a] border-b border-white/5 py-10 px-4">
         <div className="max-w-3xl mx-auto">
           <Link href="/listings" className="inline-flex items-center gap-2 text-white/40 hover:text-white text-sm mb-4 transition-colors">
@@ -146,225 +178,349 @@ export default function CreateListingPage() {
         )}
 
         <form onSubmit={handleSubmit}>
-          {/* Step 1: Details */}
+
+          {/* ── STEP 1: Infos générales ── */}
           {step === 1 && (
             <div className="space-y-5">
-            <div className="bg-surface rounded-2xl border border-white/[0.08] shadow-sm p-6 space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className={labelClass}>Marque *</label>
-                  <select value={form.brand} onChange={(e) => updateField("brand", e.target.value)} required className={inputClass}>
-                    <option value="">Sélectionner une marque</option>
-                    {CAR_BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass}>Modèle *</label>
-                  <input type="text" value={form.model} onChange={(e) => updateField("model", e.target.value)} required placeholder="ex. Clio, Golf, 208" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Année *</label>
-                  <input type="number" value={form.year} onChange={(e) => updateField("year", e.target.value)} required min="1990" max="2026" placeholder="2020" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Kilométrage (km) *</label>
-                  <input type="number" value={form.mileage} onChange={(e) => updateField("mileage", e.target.value)} required min="0" placeholder="85000" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Prix (MAD) *</label>
-                  <input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} required min="0" placeholder="95000" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Ville *</label>
-                  <select value={form.city} onChange={(e) => updateField("city", e.target.value)} required className={inputClass}>
-                    {MOROCCAN_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass}>Carburant</label>
-                  <select value={form.fuelType} onChange={(e) => updateField("fuelType", e.target.value)} className={inputClass}>
-                    {FUEL_TYPES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass}>Transmission</label>
-                  <select value={form.transmission} onChange={(e) => updateField("transmission", e.target.value)} className={inputClass}>
-                    {TRANSMISSIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass}>Carrosserie</label>
-                  <select value={form.bodyType} onChange={(e) => updateField("bodyType", e.target.value)} className={inputClass}>
-                    {BODY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className={labelClass}>Couleur</label>
-                  <input type="text" value={form.color} onChange={(e) => updateField("color", e.target.value)} placeholder="ex. Blanc, Noir, Bleu" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Cylindrée</label>
-                  <input type="text" value={form.engineSize} onChange={(e) => updateField("engineSize", e.target.value)} placeholder="ex. 1.6L, 2.0L" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Puissance (ch)</label>
-                  <input type="text" value={form.power} onChange={(e) => updateField("power", e.target.value)} placeholder="ex. 110" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Portes</label>
-                  <input type="number" value={form.doors} onChange={(e) => updateField("doors", e.target.value)} min="2" max="5" placeholder="5" className={inputClass} />
-                </div>
-                <div>
-                  <label className={labelClass}>Places</label>
-                  <input type="number" value={form.seats} onChange={(e) => updateField("seats", e.target.value)} min="2" max="9" placeholder="5" className={inputClass} />
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Identification du véhicule</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Marque *</label>
+                    <select value={form.brand} onChange={(e) => updateField("brand", e.target.value)} required className={inputClass}>
+                      <option value="">Sélectionner une marque</option>
+                      {CAR_BRANDS.map((b) => <option key={b} value={b}>{b}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Modèle *</label>
+                    <input type="text" value={form.model} onChange={(e) => updateField("model", e.target.value)} required placeholder="ex. Clio, Golf, 208" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Année *</label>
+                    <input type="number" value={form.year} onChange={(e) => updateField("year", e.target.value)} required min="1990" max="2026" placeholder="2020" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Première mise en circulation</label>
+                    <input type="month" value={form.firstRegistration} onChange={(e) => updateField("firstRegistration", e.target.value)} className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Kilométrage (km) *</label>
+                    <input type="number" value={form.mileage} onChange={(e) => updateField("mileage", e.target.value)} required min="0" placeholder="85000" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Nb de propriétaires</label>
+                    <input type="number" value={form.numberOfOwners} onChange={(e) => updateField("numberOfOwners", e.target.value)} min="1" max="20" placeholder="1" className={inputClass} />
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label className={labelClass}>Description *</label>
-                <textarea value={form.description} onChange={(e) => updateField("description", e.target.value)} required rows={4} placeholder="Décrivez l'état de votre voiture, ses équipements, son historique d'entretien et ses options..." className={inputClass + " resize-none"} />
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                {[
-                  { key: "isVintage", label: "Classique / Vintage" },
-                  { key: "isImport", label: "Véhicule importé" },
-                  { key: "isDamaged", label: "Véhicule accidenté" },
-                  { key: "hasWarranty", label: "Garantie disponible" },
-                ].map(({ key, label }) => (
-                  <label key={key} className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors text-sm font-medium ${
-                    form[key as keyof typeof form]
-                      ? "bg-orange-500/10 border-orange-500/30 text-orange-300"
-                      : "border-white/10 text-white/60 hover:bg-white/[0.04]"
-                  }`}>
-                    <input
-                      type="checkbox"
-                      checked={form[key as keyof typeof form] as boolean}
-                      onChange={(e) => updateField(key, e.target.checked)}
-                      className="rounded accent-orange-500"
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Credit section */}
-            <div className="bg-surface rounded-2xl border border-white/[0.08] shadow-sm p-6 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-white flex items-center gap-2">
-                    💳 Paiement en crédit
-                  </h3>
-                  <p className="text-sm text-white/40 mt-0.5">Proposez aux acheteurs un échelonnement — ça élargit votre audience.</p>
-                </div>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={form.creditEnabled as boolean}
-                    onChange={(e) => updateField("creditEnabled", e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500" />
-                </label>
-              </div>
-
-              {form.creditEnabled && (
-                <div className="space-y-4 pt-2 border-t border-white/[0.06]">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div>
-                      <label className={labelClass}>Apport initial (DH)</label>
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>État du véhicule *</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {CONDITIONS.map((c) => (
+                    <label key={c.value} className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                      form.condition === c.value
+                        ? "bg-orange-500/10 border-orange-500/40 text-orange-300"
+                        : "border-white/10 text-white/60 hover:bg-white/[0.04]"
+                    }`}>
                       <input
-                        type="number"
-                        value={form.creditDownPayment}
-                        onChange={(e) => updateField("creditDownPayment", e.target.value)}
-                        placeholder="ex: 30000"
-                        min="0"
-                        className={inputClass}
+                        type="radio"
+                        name="condition"
+                        value={c.value}
+                        checked={form.condition === c.value}
+                        onChange={() => updateField("condition", c.value)}
+                        className="mt-0.5 accent-orange-500"
                       />
-                      <p className="text-xs text-white/30 mt-1">
-                        {form.price && form.creditDownPayment
-                          ? `${Math.round((Number(form.creditDownPayment) / Number(form.price)) * 100)}% du prix`
-                          : "Montant payé au départ"}
-                      </p>
-                    </div>
-                    <div>
-                      <label className={labelClass}>Durée (mois)</label>
-                      <select
-                        value={form.creditMonths}
-                        onChange={(e) => updateField("creditMonths", e.target.value)}
-                        className={inputClass}
-                      >
-                        {[12, 24, 36, 48, 60, 72, 84].map((m) => (
-                          <option key={m} value={m}>{m} mois ({m / 12} an{m > 12 ? "s" : ""})</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className={labelClass}>Taux d&apos;intérêt annuel (%)</label>
+                      <div>
+                        <p className="font-semibold text-sm">{c.label}</p>
+                        <p className="text-xs text-white/40 mt-0.5">{c.desc}</p>
+                      </div>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Prix & Localisation</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Prix (MAD) *</label>
+                    <input type="number" value={form.price} onChange={(e) => updateField("price", e.target.value)} required min="0" placeholder="95000" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Ville *</label>
+                    <select value={form.city} onChange={(e) => updateField("city", e.target.value)} required className={inputClass}>
+                      {MOROCCAN_CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Description *</h3>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => updateField("description", e.target.value)}
+                  required
+                  rows={5}
+                  placeholder="Décrivez l'état du véhicule, ses équipements, l'historique d'entretien, les options incluses... Plus vous êtes précis, plus vite vous vendrez."
+                  className={inputClass + " resize-none"}
+                />
+              </div>
+
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Caractéristiques</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+                  {[
+                    { key: "isVintage", label: "Classique / Vintage" },
+                    { key: "isImport", label: "Véhicule importé" },
+                    { key: "isDamaged", label: "Véhicule accidenté" },
+                    { key: "hasWarranty", label: "Garantie disponible" },
+                  ].map(({ key, label }) => (
+                    <label key={key} className={`flex items-center gap-2.5 p-3 rounded-xl border cursor-pointer transition-colors text-sm font-medium ${
+                      form[key as keyof typeof form]
+                        ? "bg-orange-500/10 border-orange-500/30 text-orange-300"
+                        : "border-white/10 text-white/60 hover:bg-white/[0.04]"
+                    }`}>
                       <input
-                        type="number"
-                        value={form.creditInterestRate}
-                        onChange={(e) => updateField("creditInterestRate", e.target.value)}
-                        placeholder="0"
-                        min="0"
-                        max="30"
-                        step="0.1"
-                        className={inputClass}
+                        type="checkbox"
+                        checked={form[key as keyof typeof form] as boolean}
+                        onChange={(e) => updateField(key, e.target.checked)}
+                        className="rounded accent-orange-500"
                       />
-                      <p className="text-xs text-white/30 mt-1">0% = sans intérêt</p>
+                      {label}
+                    </label>
+                  ))}
+                </div>
+
+                {form.isImport && (
+                  <div className="grid grid-cols-2 gap-4 pt-3 border-t border-white/[0.06]">
+                    <div>
+                      <label className={labelClass}>Importé depuis</label>
+                      <input type="text" value={form.importedFrom} onChange={(e) => updateField("importedFrom", e.target.value)} placeholder="ex. France, Allemagne" className={inputClass} />
+                    </div>
+                    <div className="flex items-center">
+                      <label className="flex items-center gap-2.5 p-3 rounded-xl border border-white/10 cursor-pointer text-sm text-white/60 hover:bg-white/[0.04] w-full">
+                        <input type="checkbox" checked={form.customsCleared} onChange={(e) => updateField("customsCleared", e.target.checked)} className="rounded accent-orange-500" />
+                        Dédouané
+                      </label>
                     </div>
                   </div>
-
-                  {/* Live preview */}
-                  {form.price && form.creditDownPayment && form.creditMonths && (
-                    (() => {
-                      const price = Number(form.price);
-                      const down = Number(form.creditDownPayment);
-                      const months = Number(form.creditMonths);
-                      const rate = Number(form.creditInterestRate) / 100 / 12;
-                      const principal = price - down;
-                      const monthly = rate > 0
-                        ? Math.round(principal * (rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1))
-                        : Math.round(principal / months);
-                      const total = down + monthly * months;
-                      return (
-                        <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
-                          <p className="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-2">Aperçu acheteur</p>
-                          <div className="flex items-center gap-6 flex-wrap">
-                            <div>
-                              <p className="text-white/40 text-xs">Mensualité</p>
-                              <p className="text-white font-extrabold text-xl">{monthly.toLocaleString("fr-MA")} DH<span className="text-sm font-normal text-white/40">/mois</span></p>
-                            </div>
-                            <div>
-                              <p className="text-white/40 text-xs">Apport</p>
-                              <p className="text-white font-bold">{down.toLocaleString("fr-MA")} DH</p>
-                            </div>
-                            <div>
-                              <p className="text-white/40 text-xs">Durée</p>
-                              <p className="text-white font-bold">{months} mois</p>
-                            </div>
-                            <div>
-                              <p className="text-white/40 text-xs">Total payé</p>
-                              <p className="text-white font-bold">{total.toLocaleString("fr-MA")} DH</p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })()
-                  )}
-                </div>
-              )}
-            </div>
+                )}
+              </div>
             </div>
           )}
 
-          {/* Step 2: Photos & History */}
+          {/* ── STEP 2: Specs techniques & Options ── */}
           {step === 2 && (
             <div className="space-y-5">
-              <div className="bg-surface rounded-2xl border border-white/[0.08] shadow-sm p-6">
-                <h3 className="font-bold text-white mb-1">Photos</h3>
-                <p className="text-sm text-white/40 mb-4">Ajoutez jusqu&apos;à 10 photos. La première photo est la couverture. De bonnes photos vendent plus vite.</p>
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Motorisation & Transmission</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Carburant</label>
+                    <select value={form.fuelType} onChange={(e) => updateField("fuelType", e.target.value)} className={inputClass}>
+                      {FUEL_TYPES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Transmission</label>
+                    <select value={form.transmission} onChange={(e) => updateField("transmission", e.target.value)} className={inputClass}>
+                      {TRANSMISSIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Type de traction</label>
+                    <select value={form.driveType} onChange={(e) => updateField("driveType", e.target.value)} className={inputClass}>
+                      <option value="">Non précisé</option>
+                      {DRIVE_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Cylindrée</label>
+                    <input type="text" value={form.engineSize} onChange={(e) => updateField("engineSize", e.target.value)} placeholder="ex. 1.6L, 2.0L" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Nombre de cylindres</label>
+                    <select value={form.cylinders} onChange={(e) => updateField("cylinders", e.target.value)} className={inputClass}>
+                      <option value="">Non précisé</option>
+                      {[3, 4, 5, 6, 8, 10, 12, 16].map((n) => (
+                        <option key={n} value={n}>{n} cylindres</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Puissance (ch)</label>
+                    <input type="number" value={form.power} onChange={(e) => updateField("power", e.target.value)} placeholder="ex. 110" min="0" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Consommation (L/100km)</label>
+                    <input type="number" value={form.fuelConsumption} onChange={(e) => updateField("fuelConsumption", e.target.value)} placeholder="ex. 6.5" step="0.1" min="0" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Émissions CO2 (g/km)</label>
+                    <input type="number" value={form.co2Emissions} onChange={(e) => updateField("co2Emissions", e.target.value)} placeholder="ex. 120" min="0" className={inputClass} />
+                  </div>
+                </div>
+              </div>
+
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Carrosserie & Habitacle</h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Type de carrosserie</label>
+                    <select value={form.bodyType} onChange={(e) => updateField("bodyType", e.target.value)} className={inputClass}>
+                      {BODY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Couleur extérieure</label>
+                    <input type="text" value={form.color} onChange={(e) => updateField("color", e.target.value)} placeholder="ex. Blanc, Noir, Gris Anthracite" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Intérieur</label>
+                    <input type="text" value={form.interior} onChange={(e) => updateField("interior", e.target.value)} placeholder="ex. Cuir noir, Tissu gris" className={inputClass} />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Climatisation</label>
+                    <select value={form.airConditioning} onChange={(e) => updateField("airConditioning", e.target.value)} className={inputClass}>
+                      <option value="">Non précisé</option>
+                      {AIR_CONDITIONING.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Nombre de portes</label>
+                    <select value={form.doors} onChange={(e) => updateField("doors", e.target.value)} className={inputClass}>
+                      <option value="">Non précisé</option>
+                      {[2, 3, 4, 5].map((n) => <option key={n} value={n}>{n} portes</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className={labelClass}>Nombre de places</label>
+                    <select value={form.seats} onChange={(e) => updateField("seats", e.target.value)} className={inputClass}>
+                      <option value="">Non précisé</option>
+                      {[2, 4, 5, 6, 7, 8, 9].map((n) => <option key={n} value={n}>{n} places</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Credit section */}
+              <div className={sectionClass}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-bold text-white flex items-center gap-2">
+                      💳 Paiement en crédit
+                    </h3>
+                    <p className="text-sm text-white/40 mt-0.5">Proposez aux acheteurs un échelonnement — ça élargit votre audience.</p>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={form.creditEnabled as boolean}
+                      onChange={(e) => updateField("creditEnabled", e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-orange-500" />
+                  </label>
+                </div>
+
+                {form.creditEnabled && (
+                  <div className="space-y-4 pt-2 border-t border-white/[0.06]">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      <div>
+                        <label className={labelClass}>Apport initial (DH)</label>
+                        <input
+                          type="number"
+                          value={form.creditDownPayment}
+                          onChange={(e) => updateField("creditDownPayment", e.target.value)}
+                          placeholder="ex: 30000"
+                          min="0"
+                          className={inputClass}
+                        />
+                        <p className="text-xs text-white/30 mt-1">
+                          {form.price && form.creditDownPayment
+                            ? `${Math.round((Number(form.creditDownPayment) / Number(form.price)) * 100)}% du prix`
+                            : "Montant payé au départ"}
+                        </p>
+                      </div>
+                      <div>
+                        <label className={labelClass}>Durée (mois)</label>
+                        <select
+                          value={form.creditMonths}
+                          onChange={(e) => updateField("creditMonths", e.target.value)}
+                          className={inputClass}
+                        >
+                          {[12, 24, 36, 48, 60, 72, 84].map((m) => (
+                            <option key={m} value={m}>{m} mois ({m / 12} an{m > 12 ? "s" : ""})</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className={labelClass}>Taux d&apos;intérêt annuel (%)</label>
+                        <input
+                          type="number"
+                          value={form.creditInterestRate}
+                          onChange={(e) => updateField("creditInterestRate", e.target.value)}
+                          placeholder="0"
+                          min="0"
+                          max="30"
+                          step="0.1"
+                          className={inputClass}
+                        />
+                        <p className="text-xs text-white/30 mt-1">0% = sans intérêt</p>
+                      </div>
+                    </div>
+
+                    {form.price && form.creditDownPayment && form.creditMonths && (
+                      (() => {
+                        const price = Number(form.price);
+                        const down = Number(form.creditDownPayment);
+                        const months = Number(form.creditMonths);
+                        const rate = Number(form.creditInterestRate) / 100 / 12;
+                        const principal = price - down;
+                        const monthly = rate > 0
+                          ? Math.round(principal * (rate * Math.pow(1 + rate, months)) / (Math.pow(1 + rate, months) - 1))
+                          : Math.round(principal / months);
+                        const total = down + monthly * months;
+                        return (
+                          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4">
+                            <p className="text-emerald-400 text-xs font-bold uppercase tracking-wide mb-2">Aperçu acheteur</p>
+                            <div className="flex items-center gap-6 flex-wrap">
+                              <div>
+                                <p className="text-white/40 text-xs">Mensualité</p>
+                                <p className="text-white font-extrabold text-xl">{monthly.toLocaleString("fr-MA")} DH<span className="text-sm font-normal text-white/40">/mois</span></p>
+                              </div>
+                              <div>
+                                <p className="text-white/40 text-xs">Apport</p>
+                                <p className="text-white font-bold">{down.toLocaleString("fr-MA")} DH</p>
+                              </div>
+                              <div>
+                                <p className="text-white/40 text-xs">Durée</p>
+                                <p className="text-white font-bold">{months} mois</p>
+                              </div>
+                              <div>
+                                <p className="text-white/40 text-xs">Total payé</p>
+                                <p className="text-white font-bold">{total.toLocaleString("fr-MA")} DH</p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })()
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* ── STEP 3: Photos & Historique ── */}
+          {step === 3 && (
+            <div className="space-y-5">
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Photos</h3>
+                <p className="text-sm text-white/40 mb-4">Ajoutez jusqu&apos;à 10 photos. La première photo est la couverture. De bonnes photos vendent 3× plus vite.</p>
                 <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                   {images.map((img, i) => (
                     <div key={i} className={`relative aspect-square rounded-xl overflow-hidden border-2 ${i === 0 ? "border-orange-400" : "border-white/[0.08]"}`}>
@@ -380,102 +536,105 @@ export default function CreateListingPage() {
                   {images.length < 10 && (
                     <label className="aspect-square rounded-xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center cursor-pointer hover:border-orange-400 hover:bg-orange-500/10 transition-colors bg-white/[0.04]">
                       <Upload className="w-6 h-6 text-white/30 mb-1.5" />
-                      <span className="text-xs text-white/40 font-medium">Ajouter une photo</span>
+                      <span className="text-xs text-white/40 font-medium">Ajouter</span>
                       <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
                     </label>
                   )}
                 </div>
+                <p className="text-xs text-white/30 mt-2">Conseils : photos en extérieur, lumière naturelle, angles : avant, arrière, profil, intérieur, moteur, compteur</p>
               </div>
 
-              <div className="bg-surface rounded-2xl border border-white/[0.08] shadow-sm p-6">
-                <h3 className="font-bold text-white mb-1">Historique du véhicule <span className="text-sm font-normal text-white/40">(optionnel mais recommandé)</span></h3>
-                <p className="text-sm text-white/40 mb-4">Les annonces avec historique se vendent 3× plus vite et à meilleur prix.</p>
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Historique du véhicule <span className="text-sm font-normal text-white/40">(optionnel mais recommandé)</span></h3>
+                <p className="text-sm text-white/40 mb-4">Les annonces avec historique se vendent plus vite et à meilleur prix.</p>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className={labelClass}>Numéro VIN</label>
-                    <input type="text" value={form.vinNumber} onChange={(e) => updateField("vinNumber", e.target.value)} placeholder="VIN 17 caractères" className={inputClass} />
+                    <input type="text" value={form.vinNumber} onChange={(e) => updateField("vinNumber", e.target.value)} placeholder="17 caractères" className={inputClass} />
                   </div>
                   <div>
                     <label className={labelClass}>Numéro d&apos;immatriculation</label>
                     <input type="text" value={form.registrationNumber} onChange={(e) => updateField("registrationNumber", e.target.value)} placeholder="ex. 12345-A-XX" className={inputClass} />
                   </div>
-                  <div>
-                    <label className={labelClass}>Nombre de propriétaires</label>
-                    <input type="number" value={form.previousOwners} onChange={(e) => updateField("previousOwners", e.target.value)} min="0" placeholder="1" className={inputClass} />
-                  </div>
-                  {form.isImport && (
-                    <>
-                      <div>
-                        <label className={labelClass}>Importé depuis</label>
-                        <input type="text" value={form.importedFrom} onChange={(e) => updateField("importedFrom", e.target.value)} placeholder="ex. France, Allemagne" className={inputClass} />
-                      </div>
-                      <label className="flex items-center gap-2 text-sm text-white/75">
-                        <input type="checkbox" checked={form.customsCleared} onChange={(e) => updateField("customsCleared", e.target.checked)} className="rounded accent-orange-500" />
-                        Dédouané
-                      </label>
-                    </>
-                  )}
                 </div>
               </div>
             </div>
           )}
 
-          {/* Step 3: Review */}
-          {step === 3 && (
-            <div className="bg-surface rounded-2xl border border-white/[0.08] shadow-sm p-6">
-              <h3 className="font-bold text-white mb-5">Vérifiez votre annonce</h3>
+          {/* ── STEP 4: Récapitulatif ── */}
+          {step === 4 && (
+            <div className="space-y-4">
+              <div className={sectionClass}>
+                <h3 className={sectionTitle}>Vérifiez votre annonce</h3>
 
-              {images.length > 0 && (
-                <div className="flex gap-2 mb-5 overflow-x-auto scrollbar-hide pb-1">
-                  {images.map((img, i) => (
-                    <img key={i} src={img} alt="" className={`w-20 h-16 rounded-lg object-cover flex-shrink-0 ${i === 0 ? "ring-2 ring-orange-400" : ""}`} />
-                  ))}
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3 text-sm mb-5">
-                {[
-                  ["Marque", form.brand], ["Modèle", form.model],
-                  ["Année", form.year], ["Kilométrage", form.mileage ? `${Number(form.mileage).toLocaleString()} km` : ""],
-                  ["Prix", form.price ? `${Number(form.price).toLocaleString()} MAD` : ""], ["Carburant", form.fuelType],
-                  ["Transmission", form.transmission], ["Carrosserie", form.bodyType],
-                  ["Ville", form.city], ["Couleur", form.color],
-                  ["Moteur", form.engineSize], ["Puissance", form.power ? `${form.power} ch` : ""],
-                ].filter(([, v]) => v).map(([label, value]) => (
-                  <div key={label as string} className="flex gap-2 p-2.5 bg-white/[0.04] rounded-lg">
-                    <span className="text-white/40 text-xs w-24 flex-shrink-0 pt-0.5">{label as string}</span>
-                    <span className="font-semibold text-white text-xs">{value as string}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-5">
-                {form.hasWarranty && <span className="text-xs bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full font-medium">Garantie</span>}
-                {form.isVintage && <span className="text-xs bg-amber-500/15 text-amber-300 px-2.5 py-1 rounded-full font-medium">Classique</span>}
-                {form.isImport && <span className="text-xs bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-full font-medium">Importé</span>}
-                {form.isDamaged && <span className="text-xs bg-red-500/15 text-red-300 px-2.5 py-1 rounded-full font-medium">Véhicule accidenté</span>}
-              </div>
-
-              <div className="bg-white/[0.04] rounded-xl p-4 space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <span className={images.length > 0 ? "text-emerald-400" : "text-red-500"}>
-                    {images.length > 0 ? "✓" : "✗"}
-                  </span>
-                  <span className="text-white/60">{images.length} photo{images.length !== 1 ? "s" : ""} ajoutée{images.length !== 1 ? "s" : ""}</span>
-                </div>
-                {form.vinNumber && (
-                  <div className="flex items-center gap-2 text-sm text-emerald-400">
-                    <CheckCircle className="w-4 h-4" />
-                    Historique du véhicule inclus
+                {images.length > 0 && (
+                  <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+                    {images.map((img, i) => (
+                      <img key={i} src={img} alt="" className={`w-20 h-16 rounded-lg object-cover flex-shrink-0 ${i === 0 ? "ring-2 ring-orange-400" : ""}`} />
+                    ))}
                   </div>
                 )}
-              </div>
 
-              {images.length === 0 && (
-                <p className="text-sm text-amber-400 mt-3 flex items-center gap-1.5">
-                  ⚠ Au moins une photo est requise pour publier
-                </p>
-              )}
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {[
+                    ["Marque / Modèle", `${form.brand} ${form.model}`],
+                    ["Année", form.year],
+                    ["Kilométrage", form.mileage ? `${Number(form.mileage).toLocaleString()} km` : ""],
+                    ["Prix", form.price ? `${Number(form.price).toLocaleString()} MAD` : ""],
+                    ["État", CONDITIONS.find(c => c.value === form.condition)?.label || ""],
+                    ["Carburant", FUEL_TYPES.find(f => f.value === form.fuelType)?.label || ""],
+                    ["Transmission", TRANSMISSIONS.find(t => t.value === form.transmission)?.label || ""],
+                    ["Carrosserie", BODY_TYPES.find(t => t.value === form.bodyType)?.label || ""],
+                    ["Traction", DRIVE_TYPES.find(d => d.value === form.driveType)?.label || ""],
+                    ["Cylindres", form.cylinders ? `${form.cylinders} cyl.` : ""],
+                    ["Puissance", form.power ? `${form.power} ch` : ""],
+                    ["Conso.", form.fuelConsumption ? `${form.fuelConsumption} L/100km` : ""],
+                    ["CO2", form.co2Emissions ? `${form.co2Emissions} g/km` : ""],
+                    ["Couleur", form.color],
+                    ["Intérieur", form.interior],
+                    ["Clim.", AIR_CONDITIONING.find(a => a.value === form.airConditioning)?.label || ""],
+                    ["Portes", form.doors ? `${form.doors} portes` : ""],
+                    ["Places", form.seats ? `${form.seats} places` : ""],
+                    ["Propriétaires", form.numberOfOwners ? `${form.numberOfOwners}` : ""],
+                    ["1ère immat.", form.firstRegistration || ""],
+                    ["Ville", form.city],
+                  ].filter(([, v]) => v).map(([label, value]) => (
+                    <div key={label as string} className="flex gap-2 p-2.5 bg-white/[0.04] rounded-lg">
+                      <span className="text-white/40 text-xs w-28 flex-shrink-0 pt-0.5">{label as string}</span>
+                      <span className="font-semibold text-white text-xs">{value as string}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {form.hasWarranty && <span className="text-xs bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full font-medium">Garantie</span>}
+                  {form.isVintage && <span className="text-xs bg-amber-500/15 text-amber-300 px-2.5 py-1 rounded-full font-medium">Classique</span>}
+                  {form.isImport && <span className="text-xs bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-full font-medium">Importé</span>}
+                  {form.isDamaged && <span className="text-xs bg-red-500/15 text-red-300 px-2.5 py-1 rounded-full font-medium">Accidenté</span>}
+                  {form.creditEnabled && <span className="text-xs bg-purple-500/15 text-purple-300 px-2.5 py-1 rounded-full font-medium">Crédit disponible</span>}
+                </div>
+
+                <div className="bg-white/[0.04] rounded-xl p-4 space-y-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <span className={images.length > 0 ? "text-emerald-400" : "text-red-500"}>
+                      {images.length > 0 ? "✓" : "✗"}
+                    </span>
+                    <span className="text-white/60">{images.length} photo{images.length !== 1 ? "s" : ""} ajoutée{images.length !== 1 ? "s" : ""}</span>
+                  </div>
+                  {form.vinNumber && (
+                    <div className="flex items-center gap-2 text-sm text-emerald-400">
+                      <CheckCircle className="w-4 h-4" />
+                      Historique du véhicule inclus
+                    </div>
+                  )}
+                </div>
+
+                {images.length === 0 && (
+                  <p className="text-sm text-amber-400 flex items-center gap-1.5">
+                    ⚠ Au moins une photo est requise pour publier
+                  </p>
+                )}
+              </div>
             </div>
           )}
 
@@ -489,7 +648,7 @@ export default function CreateListingPage() {
             >
               Retour
             </button>
-            {step < 3 ? (
+            {step < 4 ? (
               <button
                 type="button"
                 onClick={() => setStep(step + 1)}
