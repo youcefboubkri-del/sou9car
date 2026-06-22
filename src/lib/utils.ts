@@ -33,10 +33,10 @@ export function timeAgo(date: Date) {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7) return `${days}d ago`;
+  if (minutes < 1) return "à l'instant";
+  if (minutes < 60) return `il y a ${minutes} min`;
+  if (hours < 24) return `il y a ${hours}h`;
+  if (days < 7) return `il y a ${days}j`;
   return date.toLocaleDateString("fr-MA");
 }
 
@@ -54,14 +54,28 @@ export const CAR_BRANDS = [
 ];
 
 export const FUEL_TYPES = [
-  "Diesel", "Gasoline", "Electric", "Hybrid", "Plug-in Hybrid",
+  { label: "Diesel", value: "DIESEL" },
+  { label: "Essence", value: "GASOLINE" },
+  { label: "Hybride", value: "HYBRID" },
+  { label: "Électrique", value: "ELECTRIC" },
+  { label: "GPL", value: "LPG" },
 ];
 
-export const TRANSMISSIONS = ["Manual", "Automatic"];
+export const TRANSMISSIONS = [
+  { label: "Manuelle", value: "MANUAL" },
+  { label: "Automatique", value: "AUTOMATIC" },
+];
 
 export const BODY_TYPES = [
-  "SUV", "Sedan", "Hatchback", "Coupe", "Convertible",
-  "Pickup", "Minivan", "Station Wagon", "Off-road", "Van",
+  { label: "SUV", value: "SUV" },
+  { label: "Berline", value: "SEDAN" },
+  { label: "Citadine", value: "HATCHBACK" },
+  { label: "Coupé", value: "COUPE" },
+  { label: "Break", value: "BREAK" },
+  { label: "Cabriolet", value: "CABRIOLET" },
+  { label: "Monospace", value: "MINIVAN" },
+  { label: "Pick-up", value: "PICKUP" },
+  { label: "Utilitaire", value: "VAN" },
 ];
 
 export const MOROCCAN_CITIES = [

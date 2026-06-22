@@ -182,21 +182,21 @@ export function ListingsPageClient() {
               <label className="block text-xs font-medium text-muted mb-1">{t.filter_body}</label>
               <select value={filters.bodyType} onChange={(e) => updateFilter("bodyType", e.target.value)} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-surface">
                 <option value="">{t.filter_all_types}</option>
-                {BODY_TYPES.map((t2) => <option key={t2} value={t2}>{t2}</option>)}
+                {BODY_TYPES.map((t2) => <option key={t2.value} value={t2.value}>{t2.label}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-muted mb-1">{t.filter_fuel}</label>
               <select value={filters.fuelType} onChange={(e) => updateFilter("fuelType", e.target.value)} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-surface">
                 <option value="">{t.filter_all_fuels_short}</option>
-                {FUEL_TYPES.map((f) => <option key={f} value={f}>{f}</option>)}
+                {FUEL_TYPES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
               </select>
             </div>
             <div>
               <label className="block text-xs font-medium text-muted mb-1">{t.filter_transmission}</label>
               <select value={filters.transmission} onChange={(e) => updateFilter("transmission", e.target.value)} className="w-full px-3 py-2 border border-border rounded-lg text-sm bg-surface">
                 <option value="">{t.filter_all}</option>
-                {TRANSMISSIONS.map((tr) => <option key={tr} value={tr}>{tr}</option>)}
+                {TRANSMISSIONS.map((tr) => <option key={tr.value} value={tr.value}>{tr.label}</option>)}
               </select>
             </div>
             <div>

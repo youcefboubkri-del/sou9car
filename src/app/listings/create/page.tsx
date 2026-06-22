@@ -23,7 +23,7 @@ export default function CreateListingPage() {
 
   const [form, setForm] = useState({
     title: "", brand: "", model: "", year: "", mileage: "",
-    price: "", fuelType: "Diesel", transmission: "Manual",
+    price: "", fuelType: "DIESEL", transmission: "MANUAL",
     bodyType: "SUV", color: "", engineSize: "", power: "",
     doors: "", seats: "", city: "Casablanca",
     description: "", isVintage: false, isImport: false,
@@ -183,19 +183,19 @@ export default function CreateListingPage() {
                 <div>
                   <label className={labelClass}>Carburant</label>
                   <select value={form.fuelType} onChange={(e) => updateField("fuelType", e.target.value)} className={inputClass}>
-                    {FUEL_TYPES.map((f) => <option key={f} value={f}>{f}</option>)}
+                    {FUEL_TYPES.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className={labelClass}>Transmission</label>
                   <select value={form.transmission} onChange={(e) => updateField("transmission", e.target.value)} className={inputClass}>
-                    {TRANSMISSIONS.map((t) => <option key={t} value={t}>{t}</option>)}
+                    {TRANSMISSIONS.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className={labelClass}>Carrosserie</label>
                   <select value={form.bodyType} onChange={(e) => updateField("bodyType", e.target.value)} className={inputClass}>
-                    {BODY_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
+                    {BODY_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
                   </select>
                 </div>
                 <div>
