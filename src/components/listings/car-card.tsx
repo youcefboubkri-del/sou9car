@@ -80,6 +80,7 @@ export function CarCard({ listing, index = 0 }: { listing: ListingCard; index?: 
               src={listing.thumbnail}
               alt={listing.title}
               className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
               whileHover={{ scale: 1.08 }}
               transition={{ duration: 0.5, ease: "easeOut" }}
             />
@@ -106,8 +107,8 @@ export function CarCard({ listing, index = 0 }: { listing: ListingCard; index?: 
           {/* Top-right: favorite + transmission */}
           <div className="absolute top-3 right-3 flex items-center gap-1.5">
             <FavoriteButton listingId={listing.id} initialFavorited={listing.isFavorited} />
-            <div className="bg-white/95 px-2.5 py-1 rounded-lg text-xs font-bold text-white/75 shadow-sm">
-              {listing.transmission === "Automatic" ? t.card_auto : t.card_manual}
+            <div className="bg-black/55 backdrop-blur-sm px-2.5 py-1 rounded-lg text-xs font-bold text-white shadow-sm">
+              {listing.transmission === "AUTOMATIC" ? t.card_auto : t.card_manual}
             </div>
           </div>
 

@@ -337,6 +337,12 @@ export function ListingDetailClient({ id }: { id: string }) {
 
   const imgs = listing.images.length > 0 ? listing.images : [{ id: "none", url: "", order: 0 }];
 
+  const CONDITION_FR: Record<string, string> = { EXCELLENT: "Excellent", GOOD: "Bon état", FAIR: "État correct", POOR: "Mauvais état" };
+  const BODY_FR: Record<string, string> = { SEDAN: "Berline", HATCHBACK: "Citadine", SUV: "SUV", BREAK: "Break", COUPE: "Coupé", CABRIOLET: "Cabriolet", MINIVAN: "Monospace", PICKUP: "Pick-up", VAN: "Utilitaire" };
+  const FUEL_FR: Record<string, string> = { DIESEL: "Diesel", GASOLINE: "Essence", HYBRID: "Hybride", ELECTRIC: "Électrique", LPG: "GPL", CNG: "GNC" };
+  const TRANS_FR: Record<string, string> = { AUTOMATIC: "Automatique", MANUAL: "Manuelle", SEMI_AUTO: "Semi-automatique" };
+  const tr = (map: Record<string, string>, val: string | null | undefined) => val ? (map[val] ?? val) : null;
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <Link href="/listings" className="inline-flex items-center gap-2 text-sm text-muted hover:text-foreground mb-4">
@@ -348,7 +354,7 @@ export function ListingDetailClient({ id }: { id: string }) {
         <div className="lg:col-span-3">
           <div className="relative rounded-2xl overflow-hidden bg-white/[0.06]">
             {listing.images.length > 0 ? (
-              <img src={imgs[currentImage].url} alt={listing.title} className="w-full h-80 md:h-96 object-cover" />
+              <img src={imgs[currentImage].url} alt={listing.title} className="w-full h-80 md:h-96 object-cover" referrerPolicy="no-referrer" />
             ) : (
               <div className="w-full h-80 md:h-96 flex items-center justify-center"><Car className="w-20 h-20 text-white/15" /></div>
             )}
@@ -373,7 +379,7 @@ export function ListingDetailClient({ id }: { id: string }) {
             <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide">
               {imgs.map((img, i) => (
                 <button key={img.id} onClick={() => setCurrentImage(i)} className={cn("flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors", i === currentImage ? "border-primary" : "border-transparent opacity-70 hover:opacity-100")}>
-                  <img src={img.url} alt="" className="w-full h-full object-cover" />
+                  <img src={img.url} alt="" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                 </button>
               ))}
             </div>
@@ -391,17 +397,17 @@ export function ListingDetailClient({ id }: { id: string }) {
             </div>
             <div className="divide-y divide-border text-sm">
               {[
-                { label: "État du véhicule", value: listing.condition },
-                { label: "Carrosserie", value: listing.bodyType },
+                { label: "État du véhicule", value: tr(CONDITION_FR, listing.condition) },
+                { label: "Carrosserie", value: tr(BODY_FR, listing.bodyType) },
                 { label: "Série", value: listing.series },
                 { label: "Ligne d'équipement", value: listing.equipmentLine },
                 { label: "Première immatriculation", value: listing.firstRegistration },
                 { label: "Kilométrage", value: listing.mileage ? `${listing.mileage.toLocaleString()} km` : null },
                 { label: "Nombre de propriétaires", value: listing.numberOfOwners },
                 { label: "Contrôle technique", value: listing.huStatus },
-                { label: "Transmission", value: listing.transmission },
+                { label: "Transmission", value: tr(TRANS_FR, listing.transmission) },
                 { label: "Type de traction", value: listing.driveType },
-                { label: "Carburant", value: listing.fuelType },
+                { label: "Carburant", value: tr(FUEL_FR, listing.fuelType) },
                 { label: "Cylindrée", value: listing.engineDisplacement ? `${listing.engineDisplacement.toLocaleString()} cm³` : null },
                 { label: "Puissance", value: listing.performanceKw && listing.performanceHp ? `${listing.performanceKw} kW (${listing.performanceHp} hp)` : null },
                 { label: "Cylindres", value: listing.cylinders },
@@ -477,9 +483,9 @@ export function ListingDetailClient({ id }: { id: string }) {
               {[
                 { icon: Calendar, label: "Année", value: listing.year },
                 { icon: Gauge, label: "Kilométrage", value: formatMileage(listing.mileage) },
-                { icon: Fuel, label: "Carburant", value: listing.fuelType },
-                { label: "Transmission", value: listing.transmission },
-                { label: "Carrosserie", value: listing.bodyType },
+                { icon: Fuel, label: "Carburant", value: tr(FUEL_FR, listing.fuelType) },
+                { label: "Transmission", value: tr(TRANS_FR, listing.transmission) },
+                { label: "Carrosserie", value: tr(BODY_FR, listing.bodyType) },
                 ...(listing.color ? [{ label: "Couleur", value: listing.color }] : []),
                 ...(listing.engineSize ? [{ label: "Moteur", value: listing.engineSize }] : []),
                 ...(listing.power ? [{ label: "Puissance", value: `${listing.power} HP` }] : []),
