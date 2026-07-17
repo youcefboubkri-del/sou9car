@@ -29,7 +29,7 @@ interface ListingCard {
 
 function proxyImg(url: string | null) {
   if (!url) return null;
-  if (url.startsWith("/")) return url;
+  if (url.startsWith("/") || url.startsWith("data:")) return url;
   return `/api/img?url=${encodeURIComponent(url)}`;
 }
 

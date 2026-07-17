@@ -22,6 +22,7 @@ export async function generateMetadata({
     title: `${post.title} — Sou9Car Blog`,
     description: post.excerpt + " " + post.excerptAr,
     keywords: post.keywords,
+    alternates: { canonical: `https://sou9car.ma/blog/${slug}` },
   };
 }
 

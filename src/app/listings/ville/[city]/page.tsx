@@ -69,6 +69,7 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
     title: `Voiture Occasion ${info.fr} 2026 — Annonces Auto | سيارات مستعملة ${info.ar}`,
     description: `${info.desc} Trouvez votre prochaine voiture sur Sou9Car — marketplace auto fiable au Maroc.`,
     keywords: info.keywords,
+    alternates: { canonical: `https://sou9car.ma/listings/ville/${city}` },
   };
 }
 

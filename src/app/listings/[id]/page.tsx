@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { MainLayout } from "@/components/layout/main-layout";
 import { ListingDetailClient } from "@/components/listings/listing-detail-client";
 import { RelatedListings } from "@/components/listings/related-listings";
@@ -87,6 +88,8 @@ async function getListingJsonLd(id: string) {
 
 export default async function ListingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const exists = await prisma.listing.findUnique({ where: { id }, select: { id: true } });
+  if (!exists) notFound();
   const jsonLd = await getListingJsonLd(id);
 
   return (

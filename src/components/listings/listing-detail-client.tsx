@@ -335,7 +335,7 @@ export function ListingDetailClient({ id }: { id: string }) {
     );
   }
 
-  const proxyImg = (url: string) => url.startsWith("/") ? url : `/api/img?url=${encodeURIComponent(url)}`;
+  const proxyImg = (url: string) => url.startsWith("/") || url.startsWith("data:") ? url : `/api/img?url=${encodeURIComponent(url)}`;
   const imgs = listing.images.length > 0 ? listing.images : [{ id: "none", url: "", order: 0 }];
 
   const CONDITION_FR: Record<string, string> = { EXCELLENT: "Excellent", GOOD: "Bon état", FAIR: "État correct", POOR: "Mauvais état" };
@@ -380,7 +380,7 @@ export function ListingDetailClient({ id }: { id: string }) {
             <div className="flex gap-2 mt-3 overflow-x-auto scrollbar-hide">
               {imgs.map((img, i) => (
                 <button key={img.id} onClick={() => setCurrentImage(i)} className={cn("flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-colors", i === currentImage ? "border-primary" : "border-transparent opacity-70 hover:opacity-100")}>
-                  <img src={proxyImg(img.url)} alt="" className="w-full h-full object-cover" />
+                  <img src={proxyImg(img.url)} alt={`${listing.title} - photo ${i + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

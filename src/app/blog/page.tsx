@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     "Guides, prix, conseils pour acheter ou vendre une voiture au Maroc. دليل شراء وبيع السيارات في المغرب. Évitez les arnaques, comparez les prix, importez en toute sécurité.",
   keywords:
     "blog voiture maroc, guide achat voiture maroc, conseil vente voiture maroc, prix voiture occasion maroc, مدونة سيارات المغرب, نصائح شراء سيارة المغرب",
+  alternates: { canonical: "https://sou9car.ma/blog" },
 };
 
 export default function BlogPage() {

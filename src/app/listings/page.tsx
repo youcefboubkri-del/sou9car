@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Annonces Voitures Occasion Maroc — Sou9Car | إعلانات سيارات مستعملة المغرب",
   description: "Parcourez des milliers d'annonces de voitures occasion au Maroc. Filtrez par marque, ville, prix, année, carburant. تصفح آلاف إعلانات السيارات المستعملة في المغرب. فلتر حسب الماركة، المدينة، السعر، السنة، الوقود. Casablanca, Rabat, Marrakech, Fès, Tanger, Agadir, Meknès, Oujda.",
   keywords: "annonces voitures maroc, voiture occasion maroc, سيارات للبيع المغرب, إعلانات سيارات المغرب, voiture occasion casablanca, voiture occasion rabat, voiture occasion marrakech, voiture occasion fes, voiture occasion tanger, voiture occasion agadir, سيارات مستعملة الدار البيضاء, سيارات مستعملة الرباط, سيارات مستعملة مراكش, سيارات مستعملة فاس, سيارات مستعملة طنجة, filtre voiture maroc, recherche voiture maroc, dacia occasion, renault occasion, toyota occasion",
+  alternates: { canonical: "https://sou9car.ma/listings" },
 };
 import { MainLayout } from "@/components/layout/main-layout";
 import { ListingsPageClient } from "@/components/listings/listings-page-client";
