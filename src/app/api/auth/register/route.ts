@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { hashPassword, createToken } from "@/lib/auth";
+import { hashPassword, createToken, isMobileClient } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
           name: user.name,
           role: user.role,
         },
+        ...(isMobileClient(req) ? { token } : {}),
       },
       { status: 201 }
     );

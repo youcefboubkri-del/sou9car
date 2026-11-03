@@ -1,5 +1,5 @@
 import { SignJWT, jwtVerify } from "jose";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { prisma } from "./prisma";
 import bcrypt from "bcryptjs";
 
@@ -34,9 +34,18 @@ export async function verifyToken(token: string) {
   }
 }
 
+// Header the mobile app sends so login/register include the token in the JSON body.
+export const MOBILE_CLIENT_HEADER = "x-sou9car-client";
+
+export function isMobileClient(req: Request) {
+  return req.headers.get(MOBILE_CLIENT_HEADER) === "mobile";
+}
+
 export async function getSession() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("session")?.value;
+  // Mobile app: "Authorization: Bearer <jwt>". Web: httpOnly "session" cookie.
+  const authHeader = (await headers()).get("authorization");
+  const bearer = authHeader?.match(/^Bearer\s+(.+)$/i)?.[1];
+  const token = bearer ?? (await cookies()).get("session")?.value;
   if (!token) return null;
   return verifyToken(token);
 }
