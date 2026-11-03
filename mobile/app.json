@@ -1,0 +1,48 @@
+{
+  "expo": {
+    "name": "Sou9Car",
+    "slug": "sou9car",
+    "scheme": "sou9car",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#050509",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ma.sou9car.app",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "Sou9Car a besoin d'acc\u00e9der \u00e0 vos photos pour ajouter des images \u00e0 votre annonce.",
+        "NSCameraUsageDescription": "Sou9Car a besoin de l'appareil photo pour photographier votre v\u00e9hicule."
+      }
+    },
+    "android": {
+      "package": "ma.sou9car.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#050509",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-image",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Sou9Car a besoin d'acc\u00e9der \u00e0 vos photos pour ajouter des images \u00e0 votre annonce.",
+          "cameraPermission": "Sou9Car a besoin de l'appareil photo pour photographier votre v\u00e9hicule."
+        }
+      ]
+    ],
+    "extra": {
+      "apiUrl": "https://sou9car.ma"
+    }
+  }
+}

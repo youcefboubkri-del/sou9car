@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { verifyPassword, createToken } from "@/lib/auth";
+import { verifyPassword, createToken, isMobileClient } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
         name: user.name,
         role: user.role,
       },
+      ...(isMobileClient(req) ? { token } : {}),
     });
     response.cookies.set("session", token, {
       httpOnly: true,

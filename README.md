@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Mobile app
+
+The iOS + Android app lives in [`mobile/`](mobile/README.md) (Expo / React Native). It uses this project's API routes as its backend.
+
 ## Getting Started
 
 First, run the development server:
